@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Expert marketplace icon">
+  <rect width="512" height="512" rx="112" fill="#6366f1"/>
+  <circle cx="192" cy="208" r="64" fill="#ffffff" opacity="0.95"/>
+  <path d="M96 392c18-70 52-104 96-104s78 34 96 104H96z" fill="#ffffff" opacity="0.95"/>
+  <path d="M304 160h96c18 0 32 14 32 32v80c0 18-14 32-32 32h-40l-48 48v-48h-8c-18 0-32-14-32-32v-80c0-18 14-32 32-32z" fill="#c7d2fe"/>
+  <path d="M320 212h64M320 252h40" stroke="#4338ca" stroke-width="20" stroke-linecap="round"/>
+</svg>
