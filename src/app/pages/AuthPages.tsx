@@ -501,7 +501,7 @@ export function SignupPage({ audience }: { audience: AuthAudience }) {
         })
 
         await api.post("/login", { user: { email, password } })
-        const meRes = await api.get("/me")
+        const meRes = await api.get("/me", { headers: { "X-Tenant-Id": slug } })
         localStorage.setItem("user", JSON.stringify(meRes.user))
         if (meRes.membership) {
           localStorage.setItem("membership", JSON.stringify(meRes.membership))
@@ -521,6 +521,15 @@ export function SignupPage({ audience }: { audience: AuthAudience }) {
           role,
           specialization: expertise,
         })
+        try {
+          const meRes = await api.get("/me")
+          localStorage.setItem("user", JSON.stringify(meRes.user))
+          if (meRes.membership) {
+            localStorage.setItem("membership", JSON.stringify(meRes.membership))
+          }
+        } catch (meErr) {
+          console.error("Failed to fetch user profile after signup:", meErr)
+        }
         toast.success("Registration completed! Please verify email.")
         setStep("verify")
       }
