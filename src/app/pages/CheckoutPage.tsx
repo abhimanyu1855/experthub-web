@@ -15,7 +15,7 @@ import { api } from "@/app/lib/api"
 import { loadRazorpayCheckout } from "@/app/lib/razorpay"
 import { toast } from "sonner"
 import { loadStripe, type Stripe } from "@stripe/stripe-js"
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js"
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js"
 import { useTenant } from "@/app/providers/TenantThemeProvider"
 
 type StripePayment = {
@@ -60,8 +60,8 @@ function formatPaymentAmount(amount: number, currency: string) {
   }
 }
 
-// Stripe PaymentElement form rendered inside <Elements> provider
-function StripePaymentForm({ total, onBack, onSuccess }: { total: number; onBack: () => void; onSuccess: (booking?: any) => void }) {
+// Stripe CardElement form rendered inside <Elements> provider
+function StripePaymentForm({ clientSecret, total, onBack, onSuccess }: { clientSecret: string; total: number; onBack: () => void; onSuccess: (booking?: any) => void }) {
   const stripe = useStripe()
   const elements = useElements()
   const [paying, setPaying] = useState(false)
@@ -69,14 +69,25 @@ function StripePaymentForm({ total, onBack, onSuccess }: { total: number; onBack
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!stripe || !elements) return
+    if (!stripe || !elements) {
+      return
+    }
     setPaying(true)
     setError(null)
-    const { error: stripeError } = await stripe.confirmPayment({
-      elements,
-      confirmParams: { return_url: `${window.location.origin}/dashboard` },
-      redirect: "if_required"
+
+    const cardElement = elements.getElement(CardElement)
+    if (!cardElement) {
+      setError("Card input element not loaded")
+      setPaying(false)
+      return
+    }
+
+    const { error: stripeError } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement
+      }
     })
+
     if (stripeError) {
       setError(stripeError.message ?? "Payment failed")
       setPaying(false)
@@ -87,7 +98,22 @@ function StripePaymentForm({ total, onBack, onSuccess }: { total: number; onBack
 
   return (
     <form onSubmit={handleSubmit}>
-      <PaymentElement className="mb-5" />
+      <div className="p-4 border border-border rounded-xl bg-input-background mb-5">
+        <CardElement options={{
+          style: {
+            base: {
+              fontSize: '16px',
+              color: 'var(--foreground)',
+              '::placeholder': {
+                color: 'var(--muted-foreground)',
+              },
+            },
+            invalid: {
+              color: 'var(--destructive)',
+            },
+          },
+        }} />
+      </div>
       {error && (
         <div className="flex items-center gap-2 text-destructive text-sm mb-4">
           <AlertCircle className="h-4 w-4 shrink-0" />
@@ -100,7 +126,12 @@ function StripePaymentForm({ total, onBack, onSuccess }: { total: number; onBack
       </div>
       <div className="flex gap-3">
         <Button type="button" variant="outline" className="flex-1 rounded-xl" onClick={onBack}>Back</Button>
-        <Button type="submit" className="flex-1 rounded-xl gap-2" disabled={!stripe || paying}>
+        <Button
+          id="stripe-pay-button"
+          type="submit"
+          className="flex-1 rounded-xl gap-2"
+          disabled={!stripe || paying}
+        >
           {paying ? (
             <span className="flex items-center gap-2">
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: "linear" }}>
@@ -435,7 +466,8 @@ export function CheckoutPage() {
         }
       }
 
-      const res = await api.post("/bookings", payload) as BookingCreateResponse
+      const url = "/bookings"
+      const res = await api.post(url, payload) as BookingCreateResponse
 
       if (isRazorpayPayment(res.payment)) {
         setBooking(res.booking)
@@ -744,8 +776,9 @@ export function CheckoutPage() {
                       onSubmitted={handleRazorpaySubmitted}
                     />
                   ) : clientSecret && stripePromise ? (
-                    <Elements stripe={stripePromise} options={{ clientSecret, appearance: { theme: "stripe" } }}>
+                    <Elements stripe={stripePromise}>
                       <StripePaymentForm
+                        clientSecret={clientSecret}
                         total={total}
                         onBack={() => setStep(1)}
                         onSuccess={handlePaymentSuccess}
