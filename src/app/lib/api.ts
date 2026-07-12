@@ -8,20 +8,32 @@ if (import.meta.env.DEV && API_URL.includes(":3000")) {
   );
 }
 
-// Helper to get subdomain for multi-tenant mapping
+// Helper to get subdomain for multi-tenant mapping.
+// Works for localhost, *.localhost, plain domains AND multi-part domains like nip.io.
 export function getSubdomain(): string | null {
   const hostname = window.location.hostname;
-  const parts = hostname.split(".");
-  
-  // If we are on localhost/127.0.0.1 or simple domain without subdomain
-  if (parts.length <= 1) return null;
-  
-  // E.g. acme.experthub.localhost -> acme
-  // E.g. acme.localhost -> acme
-  const first = parts[0];
-  if (first === "www" || first === "experthub") {
+
+  // --- 1. Use VITE_APP_DOMAIN when available (production / nip.io) ---
+  const appDomain = import.meta.env.VITE_APP_DOMAIN as string | undefined;
+  if (appDomain && appDomain.length > 0) {
+    // Root domain: hostname === appDomain  → no tenant
+    if (hostname === appDomain) return null;
+    // Tenant subdomain: hostname ends with ".<appDomain>"
+    const suffix = "." + appDomain;
+    if (hostname.endsWith(suffix)) {
+      const sub = hostname.slice(0, hostname.length - suffix.length);
+      if (sub && sub !== "www") return sub;
+    }
+    // Unrecognised host — treat as root
     return null;
   }
+
+  // --- 2. Localhost fallback (development) ---
+  const parts = hostname.split(".");
+  if (parts.length <= 1) return null;             // plain "localhost"
+  const first = parts[0];
+  if (first === "www" || first === "experthub" || first === "localhost") return null;
+  // acme.localhost or acme.experthub.localhost
   return first;
 }
 
