@@ -251,6 +251,17 @@ function BookingPanel({
 
 // ─── Page Component ───────────────────────────────────────────────────────────
 
+const getEmbedUrl = (url: string) => {
+  if (!url) return null
+  const ytMatch = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`
+  
+  const vimeoMatch = url.match(/vimeo\.com\/(?:channels\/[^\/]+\/|groups\/[^\/]+\/videos\/|album\/[^\/]+\/video\/|showcase\/[^\/]+\/video\/|event\/[^\/]+\/videos\/|video\/)?([0-9]+)/)
+  if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`
+  
+  return url.startsWith("http") ? url : null
+}
+
 export function ExpertStorefrontPage() {
   const { username } = useParams<{ username: string }>()
   const navigate = useNavigate()
@@ -296,7 +307,7 @@ export function ExpertStorefrontPage() {
 
         // Subscription plans (client-facing plans)
         try {
-          const plansData = await api.get("/subscription_plans")
+          const plansData = await api.get(`/subscription_plans?expert_profile_id=${expertProfileId || ""}`)
           const clientPlans = Array.isArray(plansData)
             ? plansData.filter((p: any) => p.target_role === "client" && p.is_active !== false)
             : []
@@ -547,6 +558,64 @@ export function ExpertStorefrontPage() {
                       ))}
                     </div>
                   </div>
+
+                  {/* Intro Video */}
+                  {profile?.intro_video_url && getEmbedUrl(profile.intro_video_url) && (
+                    <div className="bg-card rounded-2xl border border-border p-5 overflow-hidden">
+                      <h2 className="font-semibold text-foreground mb-3" style={{ fontFamily: "var(--font-heading)", fontSize: "1.0625rem" }}>Introduction Video</h2>
+                      <div className="relative aspect-video rounded-xl overflow-hidden bg-black/5 border border-border">
+                        <iframe
+                          src={getEmbedUrl(profile.intro_video_url)!}
+                          className="absolute inset-0 w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title="Introduction Video"
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Credentials / Vetting */}
+                  {Array.isArray(profile?.credentials) && profile.credentials.length > 0 && (
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h2 className="font-semibold text-foreground mb-4" style={{ fontFamily: "var(--font-heading)", fontSize: "1.0625rem" }}>Academic & Professional Credentials</h2>
+                      <div className="space-y-3.5">
+                        {profile.credentials.map((cred: any, idx: number) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <div className="h-8 w-8 rounded-lg bg-brand-50 border border-brand-100 flex items-center justify-center shrink-0 mt-0.5">
+                              <Award className="h-4.5 w-4.5 text-brand-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground text-sm">{cred.name}</p>
+                              <p className="text-muted-foreground text-xs mt-0.5">{cred.details}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Press / Publications */}
+                  {Array.isArray(profile?.press_links) && profile.press_links.length > 0 && (
+                    <div className="bg-card rounded-2xl border border-border p-5">
+                      <h2 className="font-semibold text-foreground mb-3" style={{ fontFamily: "var(--font-heading)", fontSize: "1.0625rem" }}>Featured In & Publications</h2>
+                      <div className="flex flex-wrap gap-3">
+                        {profile.press_links.map((link: any, idx: number) => (
+                          <a
+                            key={idx}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-muted border border-border text-xs font-semibold text-foreground hover:border-primary/40 hover:text-primary transition-all"
+                          >
+                            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
+                            {link.name}
+                            <Share2 className="h-3 w-3 text-muted-foreground" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </TabsContent>
 

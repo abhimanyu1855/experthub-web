@@ -10,89 +10,107 @@ import { toast } from "sonner"
 
 const plans = [
   {
-    id: "starter",
-    name: "Starter",
+    id: "trial",
+    name: "Free Trial",
     icon: Zap,
-    tagline: "Perfect for solo experts just getting started",
+    tagline: "Start building your marketplace with a 14-day free trial",
     monthlyPrice: 0,
     annualPrice: 0,
     cta: "Get started free",
     ctaVariant: "outline" as const,
     highlight: false,
-    badge: null,
+    badge: "14-day trial",
     features: [
-      { label: "1 expert profile", included: true },
-      { label: "Up to 10 bookings/month", included: true },
+      { label: "2 expert profiles", included: true },
+      { label: "5 services", included: true },
       { label: "Basic booking calendar", included: true },
       { label: "Chat messaging", included: true },
       { label: "Platform payment processing", included: true },
-      { label: "ExpertHub subdomain", included: true },
       { label: "Custom domain", included: false },
-      { label: "White-label branding", included: false },
-      { label: "LMS course builder", included: false },
-      { label: "Live session hosting", included: false },
-      { label: "Analytics dashboard", included: false },
-      { label: "Priority support", included: false },
-      { label: "API access", included: false },
-      { label: "Multi-operator teams", included: false },
+      { label: "Group Sessions", included: false },
+      { label: "Promo Codes", included: false },
+      { label: "Advanced Analytics", included: false },
+      { label: "Courses & LMS", included: false },
+      { label: "Subscriptions", included: false },
+      { label: "Remove Branding", included: false },
     ],
-    commission: "12% per booking",
+    commission: "15% per booking",
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    icon: Users,
+    tagline: "Perfect for small marketplaces just getting started",
+    monthlyPrice: 49,
+    annualPrice: 39,
+    cta: "Get Started",
+    ctaVariant: "outline" as const,
+    highlight: false,
+    badge: null,
+    features: [
+      { label: "5 expert profiles", included: true },
+      { label: "20 services", included: true },
+      { label: "AI Matching", included: true },
+      { label: "Custom domain", included: true },
+      { label: "Group Sessions", included: true },
+      { label: "Promo Codes", included: true },
+      { label: "Basic Analytics", included: true },
+      { label: "Webhooks", included: false },
+      { label: "Courses & LMS", included: false },
+      { label: "Subscriptions", included: false },
+      { label: "Remove Branding", included: false },
+    ],
+    commission: "10% per booking",
   },
   {
     id: "pro",
     name: "Pro",
-    icon: Users,
-    tagline: "For growing expert businesses and small teams",
-    monthlyPrice: 79,
-    annualPrice: 63,
-    cta: "Start 14-day trial",
+    icon: Zap,
+    tagline: "For growing expert businesses and professional teams",
+    monthlyPrice: 149,
+    annualPrice: 119,
+    cta: "Get Started",
     ctaVariant: "default" as const,
     highlight: true,
     badge: "Most Popular",
     features: [
-      { label: "Up to 10 expert profiles", included: true },
-      { label: "Unlimited bookings", included: true },
-      { label: "Advanced booking calendar", included: true },
-      { label: "Chat + Video calls (Daily.co)", included: true },
-      { label: "Platform payment processing", included: true },
+      { label: "25 expert profiles", included: true },
+      { label: "Unlimited services", included: true },
+      { label: "All AI features (triage & summaries)", included: true },
       { label: "Custom domain", included: true },
-      { label: "White-label branding", included: true },
-      { label: "LMS course builder (5 courses)", included: true },
-      { label: "Live session hosting", included: true },
-      { label: "Analytics dashboard", included: true },
-      { label: "Priority support", included: true },
-      { label: "API access", included: false },
-      { label: "Multi-operator teams", included: false },
-      { label: "Dedicated account manager", included: false },
+      { label: "Webhooks", included: true },
+      { label: "Courses & LMS", included: true },
+      { label: "Advanced Analytics", included: true },
+      { label: "Booking Packages", included: true },
+      { label: "Subscriptions", included: true },
+      { label: "Session Summaries", included: true },
+      { label: "Remove Branding", included: false },
     ],
     commission: "7% per booking",
   },
   {
-    id: "enterprise",
-    name: "Enterprise",
+    id: "scale",
+    name: "Scale",
     icon: Building2,
-    tagline: "For large marketplaces and multi-tenant deployments",
-    monthlyPrice: 299,
-    annualPrice: 239,
+    tagline: "For large marketplaces requiring full customizability",
+    monthlyPrice: 399,
+    annualPrice: 319,
     cta: "Contact sales",
     ctaVariant: "outline" as const,
     highlight: false,
     badge: null,
     features: [
       { label: "Unlimited expert profiles", included: true },
-      { label: "Unlimited bookings", included: true },
-      { label: "Advanced booking calendar", included: true },
-      { label: "Chat + Video calls (Daily.co)", included: true },
-      { label: "Platform payment processing", included: true },
+      { label: "Unlimited services", included: true },
+      { label: "All AI + Pro features", included: true },
       { label: "Custom domain", included: true },
-      { label: "Full white-label branding", included: true },
-      { label: "Unlimited LMS courses", included: true },
-      { label: "Live session hosting", included: true },
-      { label: "Advanced analytics + exports", included: true },
-      { label: "Dedicated support + SLA", included: true },
-      { label: "Full API access", included: true },
+      { label: "Remove Branding", included: true },
+      { label: "Dedicated Support + SLA", included: true },
+      { label: "API access", included: true },
+      { label: "Webhooks", included: true },
+      { label: "Courses & LMS", included: true },
+      { label: "Subscriptions", included: true },
       { label: "Multi-operator teams", included: true },
-      { label: "Dedicated account manager", included: true },
     ],
     commission: "4% per booking",
   },
@@ -102,64 +120,63 @@ const featureCategories = [
   {
     category: "Profiles & Experts",
     rows: [
-      { label: "Expert profiles", starter: "1", pro: "Up to 10", enterprise: "Unlimited" },
-      { label: "Custom profile URL", starter: "✓", pro: "✓", enterprise: "✓" },
-      { label: "Verified badge", starter: "—", pro: "✓", enterprise: "✓" },
+      { label: "Expert profiles", trial: "2", starter: "5", pro: "25", scale: "Unlimited" },
+      { label: "Custom profile URL", trial: "✓", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Verified badge", trial: "—", starter: "—", pro: "✓", scale: "✓" },
     ],
   },
   {
     category: "Bookings & Scheduling",
     rows: [
-      { label: "Monthly bookings", starter: "10", pro: "Unlimited", enterprise: "Unlimited" },
-      { label: "Booking calendar", starter: "Basic", pro: "Advanced", enterprise: "Advanced" },
-      { label: "Buffer time settings", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Group sessions", starter: "—", pro: "✓", enterprise: "✓" },
+      { label: "Monthly bookings", trial: "Unlimited", starter: "Unlimited", pro: "Unlimited", scale: "Unlimited" },
+      { label: "Booking calendar", trial: "Basic", starter: "Basic", pro: "Advanced", scale: "Advanced" },
+      { label: "Buffer time settings", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Group sessions", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
     ],
   },
   {
     category: "Communication",
     rows: [
-      { label: "Chat messaging", starter: "✓", pro: "✓", enterprise: "✓" },
-      { label: "Video calls", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Phone sessions", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Session recordings", starter: "—", pro: "—", enterprise: "✓" },
+      { label: "Chat messaging", trial: "✓", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Video calls", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Phone sessions", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Session summaries & transcript", trial: "—", starter: "—", pro: "✓", scale: "✓" },
     ],
   },
   {
     category: "Payments",
     rows: [
-      { label: "Payment processing", starter: "✓", pro: "✓", enterprise: "✓" },
-      { label: "Platform commission", starter: "12%", pro: "7%", enterprise: "4%" },
-      { label: "Stripe Connect", starter: "✓", pro: "✓", enterprise: "✓" },
-      { label: "Razorpay (India)", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Promo codes", starter: "—", pro: "✓", enterprise: "✓" },
+      { label: "Payment processing", trial: "✓", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Platform commission", trial: "15%", starter: "10%", pro: "7%", scale: "4%" },
+      { label: "Stripe Connect", trial: "✓", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Razorpay (India)", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Promo codes", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
     ],
   },
   {
     category: "Learning & Content",
     rows: [
-      { label: "Course builder", starter: "—", pro: "5 courses", enterprise: "Unlimited" },
-      { label: "Live session hosting", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Quiz & assessments", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Certificate issuance", starter: "—", pro: "—", enterprise: "✓" },
+      { label: "Course builder", trial: "—", starter: "—", pro: "✓", scale: "✓" },
+      { label: "Live session hosting", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Quiz & assessments", trial: "—", starter: "—", pro: "✓", scale: "✓" },
+      { label: "Certificate issuance", trial: "—", starter: "—", pro: "✓", scale: "✓" },
     ],
   },
   {
     category: "Branding & Domain",
     rows: [
-      { label: "Custom domain", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "White-label branding", starter: "—", pro: "✓", enterprise: "✓" },
-      { label: "Subdomain", starter: "yourname.experthub.io", pro: "✓", enterprise: "✓" },
-      { label: "Remove ExpertHub badge", starter: "—", pro: "✓", enterprise: "✓" },
+      { label: "Custom domain", trial: "—", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "White-label branding", trial: "—", starter: "—", pro: "—", scale: "✓" },
+      { label: "Subdomain", trial: "✓", starter: "✓", pro: "✓", scale: "✓" },
+      { label: "Remove ExpertHub badge", trial: "—", starter: "—", pro: "—", scale: "✓" },
     ],
   },
   {
     category: "Analytics & API",
     rows: [
-      { label: "Analytics dashboard", starter: "—", pro: "✓", enterprise: "Advanced" },
-      { label: "Data exports (CSV)", starter: "—", pro: "—", enterprise: "✓" },
-      { label: "API access", starter: "—", pro: "—", enterprise: "✓" },
-      { label: "Webhooks", starter: "—", pro: "—", enterprise: "✓" },
+      { label: "Analytics dashboard", trial: "Basic", starter: "Basic", pro: "Advanced", scale: "Advanced" },
+      { label: "API access", trial: "—", starter: "—", pro: "—", scale: "✓" },
+      { label: "Webhooks", trial: "—", starter: "—", pro: "✓", scale: "✓" },
     ],
   },
 ]
@@ -171,11 +188,11 @@ const faqs = [
   },
   {
     question: "What is the platform commission?",
-    answer: "The platform commission is a percentage taken from each completed booking. Starter: 12%, Pro: 7%, Enterprise: 4%. This covers payment processing, fraud protection, and platform maintenance.",
+    answer: "The platform commission is a percentage taken from each completed booking, which covers payment processing, automated payouts, and platform maintenance. Free Trial: 15%, Starter: 10%, Pro: 7%, Scale: 4%.",
   },
   {
-    question: "Is there a free trial for Pro?",
-    answer: "Yes! Pro comes with a 14-day free trial, no credit card required. You'll have access to all Pro features during the trial period.",
+    question: "Is there a free trial?",
+    answer: "Yes! ExpertHub offers a 14-day free trial, no credit card required, allowing you to list up to 2 experts and test the system completely.",
   },
   {
     question: "Do you offer refunds?",
@@ -183,7 +200,7 @@ const faqs = [
   },
   {
     question: "Can I use my own payment processor?",
-    answer: "Pro and Enterprise plans can connect Stripe Connect and Razorpay. Enterprise customers can discuss custom payment processor integrations with their account manager.",
+    answer: "Paid plans connect Stripe Connect and Razorpay for direct routing. Scale customers can discuss custom payment processor integrations with their account manager.",
   },
   {
     question: "What counts as an \"expert profile\"?",
@@ -254,7 +271,7 @@ function PlanCard({
         <Badge className="w-full justify-center py-2.5 mb-6 rounded-xl bg-success/10 text-success border-success/20 text-sm font-semibold">
           Current plan
         </Badge>
-      ) : plan.id === "enterprise" ? (
+      ) : plan.id === "scale" ? (
         <Button
           variant={plan.ctaVariant}
           className="w-full rounded-xl mb-6"
@@ -267,7 +284,7 @@ function PlanCard({
           variant={plan.ctaVariant}
           className={`w-full rounded-xl mb-6 ${plan.highlight ? "glow-brand" : ""}`}
           onClick={() => onCheckout(plan.id)}
-          disabled={isLoading || !!checkingOut}
+          disabled={isLoading || !!checkingOut || plan.id === "trial"}
         >
           {isLoading ? (
             <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Redirecting...</>
@@ -457,16 +474,21 @@ export function PricingPage() {
                     {featureCategories.map((cat) => (
                       <>
                         <tr key={cat.category} className="bg-muted/20">
-                          <td colSpan={4} className="py-2.5 px-5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          <td colSpan={plans.length + 1} className="py-2.5 px-5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             {cat.category}
                           </td>
                         </tr>
                         {cat.rows.map((row) => (
                           <tr key={row.label} className="border-b border-border/50 hover:bg-muted/20 transition-colors">
                             <td className="py-3 px-5 text-foreground">{row.label}</td>
-                            <td className="py-3 px-4 text-center text-muted-foreground">{row.starter === "✓" ? <Check className="h-4 w-4 text-success mx-auto" /> : row.starter === "—" ? <X className="h-4 w-4 text-muted-foreground/30 mx-auto" /> : row.starter}</td>
-                            <td className="py-3 px-4 text-center text-muted-foreground">{row.pro === "✓" ? <Check className="h-4 w-4 text-success mx-auto" /> : row.pro === "—" ? <X className="h-4 w-4 text-muted-foreground/30 mx-auto" /> : row.pro}</td>
-                            <td className="py-3 px-4 text-center text-muted-foreground">{row.enterprise === "✓" ? <Check className="h-4 w-4 text-success mx-auto" /> : row.enterprise === "—" ? <X className="h-4 w-4 text-muted-foreground/30 mx-auto" /> : row.enterprise}</td>
+                            {plans.map(p => {
+                              const val = (row as any)[p.id]
+                              return (
+                                <td key={p.id} className="py-3 px-4 text-center text-muted-foreground">
+                                  {val === "✓" ? <Check className="h-4 w-4 text-success mx-auto" /> : val === "—" ? <X className="h-4 w-4 text-muted-foreground/30 mx-auto" /> : val}
+                                </td>
+                              )
+                            })}
                           </tr>
                         ))}
                       </>

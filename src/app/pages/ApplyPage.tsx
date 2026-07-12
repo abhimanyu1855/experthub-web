@@ -477,6 +477,7 @@ function StepExpertise({ form, setForm, toggleCategory, newLang, setNewLang, add
 // ─── Step 3: Services ───────────────────────────────────────────────────────
 
 function StepServices({ form, toggleService }: { form: FormData; toggleService: (id: string) => void }) {
+  const tenant = useTenant()
   return (
     <div className="space-y-6">
       <div>

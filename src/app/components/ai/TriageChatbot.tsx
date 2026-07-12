@@ -9,6 +9,7 @@ import { useFeatureGate } from "@/app/lib/useFeatureGate"
 type Message = {
   role: "user" | "assistant"
   content: string
+  recommendations?: string[]
 }
 
 export function TriageChatbot() {
@@ -31,9 +32,9 @@ export function TriageChatbot() {
     try {
       const res = await api.post("/ai/triage_sessions", {})
       setSessionToken(res.session_token)
-      if (res.message) {
-        setMessages([{ role: "assistant", content: res.message }])
-      }
+      
+      const greeting = res.messages?.[0]?.content || "Hi! I'm here to help you find the right expert. What do you need help with?"
+      setMessages([{ role: "assistant", content: greeting }])
     } catch {
       setMessages([{ role: "assistant", content: "Hi! I'm here to help you find the right expert. What do you need help with?" }])
     } finally {
@@ -55,7 +56,28 @@ export function TriageChatbot() {
     try {
       if (sessionToken) {
         const res = await api.post(`/ai/triage_sessions/${sessionToken}/chat`, { message: text })
-        setMessages(prev => [...prev, { role: "assistant", content: res.message }])
+        const replyText = res.reply || res.message || ""
+        
+        setMessages(prev => {
+          const list = [...prev, { role: "assistant" as const, content: replyText }]
+          
+          if (res.status === "triaged" && res.recommendations?.category_slugs?.length) {
+            list.push({
+              role: "assistant" as const,
+              content: "I've matched your request with our expert categories! Click below to view matched experts.",
+              recommendations: res.recommendations.category_slugs
+            })
+            // Dispatch event for any active page listener (e.g., Explore Page)
+            const event = new CustomEvent("experthub:triage-completed", {
+              detail: {
+                category_slugs: res.recommendations.category_slugs,
+                query: text
+              }
+            })
+            window.dispatchEvent(event)
+          }
+          return list
+        })
       }
     } catch {
       setMessages(prev => [...prev, { role: "assistant", content: "Sorry, I had trouble connecting. Please try again." }])
@@ -136,7 +158,31 @@ export function TriageChatbot() {
                         : "bg-muted text-foreground rounded-tl-sm"
                     }`}
                   >
-                    {msg.content}
+                    <div>{msg.content}</div>
+                    {msg.recommendations && msg.recommendations.length > 0 && (
+                      <div className="mt-3 pt-2 border-t border-border/10">
+                        <Button
+                          size="sm"
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/95 text-xs rounded-xl"
+                          onClick={() => {
+                            const slug = msg.recommendations?.[0]
+                            if (slug) {
+                              const event = new CustomEvent("experthub:triage-completed", {
+                                detail: {
+                                  category_slugs: msg.recommendations,
+                                  query: "triage recommendations"
+                                }
+                              })
+                              window.dispatchEvent(event)
+                              window.location.href = `/explore?category=${slug}`
+                            }
+                            setOpen(false)
+                          }}
+                        >
+                          View Matching Experts
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}

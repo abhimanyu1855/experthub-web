@@ -417,6 +417,51 @@ export function HomePage() {
     fetchCategories()
   }, [])
 
+  // Sync category selected by URL parameter "category" (e.g. from chatbot link redirect)
+  useEffect(() => {
+    const catSlug = searchParams.get("category")
+    if (catSlug && dbCategories.length > 0) {
+      const matched = dbCategories.find(c => (c as any).slug === catSlug)
+      if (matched) {
+        setSelectedCategoryId(matched.id)
+      }
+    }
+  }, [searchParams, dbCategories])
+
+  // Listen for triage-completed event from the floating AI assistant
+  useEffect(() => {
+    const handleTriageCompleted = (e: Event) => {
+      const customEvent = e as CustomEvent
+      const { category_slugs, query } = customEvent.detail || {}
+      if (category_slugs && category_slugs.length > 0) {
+        const recommendedSlug = category_slugs[0]
+        const matched = dbCategories.find(c => (c as any).slug === recommendedSlug)
+        if (matched) {
+          setSelectedCategoryId(matched.id)
+        }
+        if (query && query !== "triage recommendations") {
+          setAiQuery(query)
+          // Automatically run AI matching
+          setAiMatching(true)
+          setAiResults(null)
+          api.post("/ai/match", { query: query.trim() })
+            .then(res => {
+              setAiResults(res.experts || res || [])
+              toast.success("✨ AI assistant matched you with these experts!")
+              setTimeout(() => aiResultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 300)
+            })
+            .catch(() => setAiResults([]))
+            .finally(() => setAiMatching(false))
+        }
+      }
+    }
+
+    window.addEventListener("experthub:triage-completed", handleTriageCompleted)
+    return () => {
+      window.removeEventListener("experthub:triage-completed", handleTriageCompleted)
+    }
+  }, [dbCategories])
+
   useEffect(() => {
     async function fetchServices() {
       setLoading(true)
