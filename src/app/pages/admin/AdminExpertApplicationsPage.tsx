@@ -338,12 +338,12 @@ export function AdminExpertApplicationsPage() {
                   <span>{selected.experience} experience</span>
                   <span>${selected.hourlyRate}/hr</span>
                   {selected.website && (
-                    <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+                    <a href={selected.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
                       <Globe className="h-3.5 w-3.5" />{selected.website}
                     </a>
                   )}
                   {selected.linkedin && (
-                    <a href="#" className="flex items-center gap-1 text-primary hover:underline">
+                    <a href={selected.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
                       <Linkedin className="h-3.5 w-3.5" />LinkedIn
                     </a>
                   )}
@@ -354,9 +354,14 @@ export function AdminExpertApplicationsPage() {
                   <p className="text-sm text-foreground leading-relaxed">{selected.bio}</p>
                 </div>
 
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Credentials</p>
-                  <p className="text-sm text-foreground">{selected.credentials}</p>
+                <div className="rounded-xl border border-border p-4 bg-muted/20">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Credentials Submitted</p>
+                  <p className="text-sm text-foreground mb-4">{selected.credentials}</p>
+                  
+                  <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/40">
+                    <span className="h-2 w-2 rounded-full bg-brand-500 animate-pulse" />
+                    <span className="text-xs text-muted-foreground font-medium">Admins should verify degrees, certificates, or professional license numbers prior to approval.</span>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

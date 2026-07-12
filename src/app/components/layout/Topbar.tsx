@@ -199,11 +199,23 @@ export function Topbar() {
         </nav>
 
         {/* Search pill (desktop) */}
-        {isTenant && (
-          <div className="hidden md:flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground cursor-pointer hover:border-primary/40 hover:bg-brand-50/50 transition-colors w-56">
+        {isTenant && location.pathname !== "/explore" && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              const input = e.currentTarget.elements.namedItem("q") as HTMLInputElement
+              navigate(`/explore?q=${encodeURIComponent(input.value || "")}`)
+            }}
+            className="hidden md:flex items-center gap-2 rounded-full border border-border bg-muted/50 px-4 py-1.5 text-sm text-muted-foreground hover:border-primary/40 focus-within:border-primary/50 focus-within:bg-background transition-colors w-56"
+          >
             <Search className="h-4 w-4 shrink-0" />
-            <span>Search experts...</span>
-          </div>
+            <input
+              type="text"
+              name="q"
+              placeholder="Search experts..."
+              className="bg-transparent border-none outline-none text-foreground w-full text-xs placeholder:text-muted-foreground focus:ring-0"
+            />
+          </form>
         )}
 
         {/* Right actions */}

@@ -33,6 +33,7 @@ const PLANS_PRICING = [
     ctaVariant: "outline" as const,
     ctaLink: "/signup",
     popular: false,
+    commission: "15% platform commission",
     features: [
       { label: "2 experts", included: true },
       { label: "5 services", included: true },
@@ -57,6 +58,7 @@ const PLANS_PRICING = [
     ctaVariant: "outline" as const,
     ctaLink: "/signup",
     popular: false,
+    commission: "10% platform commission",
     features: [
       { label: "5 experts", included: true },
       { label: "20 services", included: true },
@@ -81,6 +83,7 @@ const PLANS_PRICING = [
     ctaVariant: "cta" as const,
     ctaLink: "/signup",
     popular: true,
+    commission: "7% platform commission",
     features: [
       { label: "25 experts", included: true },
       { label: "Unlimited services", included: true },
@@ -105,6 +108,7 @@ const PLANS_PRICING = [
     ctaVariant: "outline" as const,
     ctaLink: "/contact",
     popular: false,
+    commission: "4% platform commission",
     features: [
       { label: "Unlimited experts", included: true },
       { label: "Unlimited services", included: true },
@@ -418,6 +422,11 @@ export function LandingPage() {
                       {billingPeriod === "yearly" && plan.monthlyPrice > 0 && (
                         <p className="text-emerald-400 text-xs mt-1 font-medium">
                           Billed ${price * 12}/yr · save ${(plan.monthlyPrice - price) * 12}
+                        </p>
+                      )}
+                      {plan.commission && (
+                        <p className="text-slate-400 text-[11px] mt-1 font-medium opacity-80">
+                          {plan.commission}
                         </p>
                       )}
                     </div>

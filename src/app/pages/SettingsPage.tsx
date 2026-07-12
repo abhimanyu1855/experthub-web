@@ -88,6 +88,9 @@ export function SettingsPage() {
   const [tenantGateway, setTenantGateway] = useState<string | null>(null)
   const [tenantCurrency, setTenantCurrency] = useState("USD")
   const [connectingStripe, setConnectingStripe] = useState(false)
+  const [pressLinks, setPressLinks] = useState<any[]>([])
+  const [credentials, setCredentials] = useState<any[]>([])
+  const [introVideoUrl, setIntroVideoUrl] = useState("")
 
   // Avatar
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
@@ -125,6 +128,9 @@ export function SettingsPage() {
             setSpecialization(res.user.expert_profile.specialization || "")
             setPayoutConnected(Boolean(res.user.expert_profile.payout_connected))
             setPayoutOnboardingStarted(Boolean(res.user.expert_profile.payout_onboarding_started))
+            setPressLinks(res.user.expert_profile.press_links || [])
+            setCredentials(res.user.expert_profile.credentials || [])
+            setIntroVideoUrl(res.user.expert_profile.intro_video_url || "")
           }
         }
         if (res.membership) {
@@ -192,7 +198,7 @@ export function SettingsPage() {
       }
 
       if (role === "expert") {
-        await api.patch("/experts/profile", { bio, title, specialization })
+        await api.patch("/experts/profile", { bio, title, specialization, intro_video_url: introVideoUrl, press_links: pressLinks, credentials })
       }
 
       toast.success("Profile updated", { description: "Your changes have been saved." })
@@ -387,6 +393,145 @@ export function SettingsPage() {
                           rows={3}
                           className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring resize-none"
                         />
+                      </div>
+
+                      {/* Intro Video URL */}
+                      <div className="space-y-2">
+                        <Label htmlFor="introVideoUrl">Introduction Video URL</Label>
+                        <Input
+                          id="introVideoUrl"
+                          value={introVideoUrl}
+                          onChange={e => setIntroVideoUrl(e.target.value)}
+                          className="rounded-lg"
+                          placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                        />
+                        <p className="text-xs text-muted-foreground">Share a brief video explaining your expertise (YouTube, Vimeo, etc.).</p>
+                      </div>
+
+                      {/* Credentials */}
+                      <div className="space-y-4 pt-2">
+                        <Label className="text-sm font-semibold">Academic & Professional Credentials</Label>
+                        <div className="space-y-2">
+                          {credentials.map((cred, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
+                              <div>
+                                <p className="text-xs font-semibold text-foreground">{cred.name}</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">{cred.details}</p>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-error"
+                                onClick={() => setCredentials(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {credentials.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic">No credentials added yet.</p>
+                          )}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Credential name (e.g. Stanford University)"
+                            id="new-cred-name"
+                            className="text-xs"
+                          />
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Details (e.g. M.D. in Cardiology)"
+                              id="new-cred-details"
+                              className="text-xs flex-1"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="shrink-0"
+                              onClick={() => {
+                                const nameInput = document.getElementById("new-cred-name") as HTMLInputElement
+                                const detailsInput = document.getElementById("new-cred-details") as HTMLInputElement
+                                if (nameInput?.value.trim() && detailsInput?.value.trim()) {
+                                  setCredentials(prev => [...prev, { name: nameInput.value.trim(), details: detailsInput.value.trim() }])
+                                  nameInput.value = ""
+                                  detailsInput.value = ""
+                                } else {
+                                  toast.error("Please enter both a credential name and details.")
+                                }
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Press Links */}
+                      <div className="space-y-4 pt-2">
+                        <Label className="text-sm font-semibold">Press & Publication Links</Label>
+                        <div className="space-y-2">
+                          {pressLinks.map((link, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border bg-card">
+                              <div>
+                                <p className="text-xs font-semibold text-foreground">{link.name}</p>
+                                <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline truncate max-w-xs block mt-0.5">
+                                  {link.url}
+                                </a>
+                              </div>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-muted-foreground hover:text-error"
+                                onClick={() => setPressLinks(prev => prev.filter((_, i) => i !== index))}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                          {pressLinks.length === 0 && (
+                            <p className="text-xs text-muted-foreground italic">No press links added yet.</p>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <Input
+                            placeholder="Publication / Media Name (e.g. Forbes)"
+                            id="new-press-name"
+                            className="text-xs"
+                          />
+                          <div className="flex gap-2">
+                            <Input
+                              placeholder="Article Link URL"
+                              id="new-press-url"
+                              className="text-xs flex-1"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="shrink-0"
+                              onClick={() => {
+                                const nameInput = document.getElementById("new-press-name") as HTMLInputElement
+                                const urlInput = document.getElementById("new-press-url") as HTMLInputElement
+                                if (nameInput?.value.trim() && urlInput?.value.trim()) {
+                                  let url = urlInput.value.trim()
+                                  if (!/^https?:\/\//i.test(url)) url = "https://" + url
+                                  setPressLinks(prev => [...prev, { name: nameInput.value.trim(), url }])
+                                  nameInput.value = ""
+                                  urlInput.value = ""
+                                } else {
+                                  toast.error("Please enter both a media name and a valid link URL.")
+                                }
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </>
                   )}
