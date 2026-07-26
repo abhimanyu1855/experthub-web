@@ -9,32 +9,45 @@ if (import.meta.env.DEV && API_URL.includes(":3000")) {
 }
 
 // Helper to get subdomain for multi-tenant mapping.
-// Works for localhost, *.localhost, plain domains AND multi-part domains like nip.io.
+// Works for localhost, *.localhost (e.g. acme.localhost), appDomain, AND nip.io.
 export function getSubdomain(): string | null {
   const hostname = window.location.hostname;
 
-  // --- 1. Use VITE_APP_DOMAIN when available (production / nip.io) ---
+  // 1. Plain root domain
+  if (hostname === "localhost" || hostname === "127.0.0.1" || hostname === "www") {
+    return null;
+  }
+
+  // 2. Check VITE_APP_DOMAIN if set (e.g. "experthub.localhost", "experthub.app", "13-48-105-59.nip.io")
   const appDomain = import.meta.env.VITE_APP_DOMAIN as string | undefined;
   if (appDomain && appDomain.length > 0) {
-    // Root domain: hostname === appDomain  → no tenant
     if (hostname === appDomain) return null;
-    // Tenant subdomain: hostname ends with ".<appDomain>"
+
     const suffix = "." + appDomain;
     if (hostname.endsWith(suffix)) {
       const sub = hostname.slice(0, hostname.length - suffix.length);
       if (sub && sub !== "www") return sub;
     }
-    // Unrecognised host — treat as root
-    return null;
   }
 
-  // --- 2. Localhost fallback (development) ---
+  // 3. Generic .localhost fallback (e.g. acme.localhost, sosmydoctor.localhost)
+  if (hostname.endsWith(".localhost")) {
+    const sub = hostname.replace(/\.localhost$/, "");
+    if (sub && sub !== "www" && sub !== "localhost" && sub !== "experthub") {
+      return sub;
+    }
+  }
+
+  // 4. Split by dots for any custom domain / subdomains
   const parts = hostname.split(".");
-  if (parts.length <= 1) return null;             // plain "localhost"
-  const first = parts[0];
-  if (first === "www" || first === "experthub" || first === "localhost") return null;
-  // acme.localhost or acme.experthub.localhost
-  return first;
+  if (parts.length > 1) {
+    const first = parts[0];
+    if (first !== "www" && first !== "localhost" && first !== "experthub") {
+      return first;
+    }
+  }
+
+  return null;
 }
 
 function readJsonFromStorage<T>(key: string): T | null {
