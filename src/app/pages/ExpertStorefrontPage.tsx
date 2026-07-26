@@ -107,7 +107,7 @@ function BookingPanel({
   }
 
   return (
-    <div className="glass-light rounded-2xl p-5 shadow-raised sticky top-24 border border-border/60">
+    <div className="bg-card rounded-2xl p-5 shadow-card sticky top-24 border border-border">
       <h3 className="font-bold text-foreground mb-4" style={{ fontFamily: "var(--font-heading)", fontSize: "1rem" }}>
         Book a Consultation
       </h3>
@@ -123,21 +123,21 @@ function BookingPanel({
                 setSelectedService(service)
                 setSelectedTime(null)
               }}
-              className={`w-full flex items-start justify-between p-3 rounded-xl border text-left transition-all ${
+              className={`w-full flex items-start justify-between p-3.5 rounded-xl border text-left transition-all ${
                 isSelected
-                  ? "border-primary bg-primary/15 shadow-sm"
-                  : "border-border bg-card hover:border-primary/40"
+                  ? "border-primary bg-primary/10 dark:bg-primary/20 shadow-sm ring-1 ring-primary/30"
+                  : "border-border/80 bg-background hover:border-primary/40"
               }`}
             >
-              <div className="flex-1">
-                <div className={`font-semibold ${isSelected ? "text-primary" : "text-foreground"}`} style={{ fontSize: "0.875rem" }}>
+              <div className="flex-1 min-w-0 pr-3">
+                <div className="font-bold text-foreground text-sm flex items-center gap-1.5">
                   {service.title}
                 </div>
-                <div className="text-muted-foreground mt-0.5" style={{ fontSize: "0.75rem" }}>
-                  {service.duration_minutes} min · {service.description ? service.description.slice(0, 55) + "..." : ""}
+                <div className="text-muted-foreground mt-0.5 text-xs line-clamp-2 leading-relaxed">
+                  {service.duration_minutes} min · {service.description || "1:1 Consultation"}
                 </div>
               </div>
-              <div className={`font-bold shrink-0 ml-3 ${isSelected ? "text-primary" : "text-foreground"}`} style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem" }}>
+              <div className="font-extrabold text-foreground shrink-0 text-sm" style={{ fontFamily: "var(--font-heading)" }}>
                 ${service.price_cents ? (service.price_cents / 100).toFixed(0) : "0"}
               </div>
             </button>
@@ -153,37 +153,37 @@ function BookingPanel({
       {/* Date selector */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <span className="font-medium text-foreground" style={{ fontSize: "0.875rem" }}>Select Date</span>
+          <span className="font-medium text-foreground text-xs">Select Date</span>
           <div className="flex gap-1">
             <button
               disabled={!canGoBack}
               onClick={() => setDateOffset(d => d - 1)}
               className="p-1 rounded-md hover:bg-muted disabled:opacity-30 transition-colors"
             >
-              <ChevronDown className="h-4 w-4 rotate-90" />
+              <ChevronDown className="h-4 w-4 rotate-90 text-foreground" />
             </button>
             <button
               disabled={!canGoForward}
               onClick={() => setDateOffset(d => d + 1)}
               className="p-1 rounded-md hover:bg-muted disabled:opacity-30 transition-colors"
             >
-              <ChevronDown className="h-4 w-4 -rotate-90" />
+              <ChevronDown className="h-4 w-4 -rotate-90 text-foreground" />
             </button>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           {visibleDates.map(date => (
             <button
               key={date.dateStr}
               onClick={() => { setSelectedDate(date); setSelectedTime(null) }}
               className={`flex-1 py-2 rounded-xl text-center transition-all ${
                 selectedDate?.dateStr === date.dateStr
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "bg-muted text-muted-foreground hover:bg-brand-50 hover:text-primary"
+                  ? "bg-primary text-primary-foreground font-bold shadow-sm"
+                  : "bg-muted/70 text-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
-              <div style={{ fontSize: "0.625rem", fontWeight: 600 }}>{date.monthDay.slice(4)}</div>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 600 }}>{date.dayName}</div>
+              <div style={{ fontSize: "0.625rem", fontWeight: 600 }} className="opacity-80">{date.monthDay.slice(4)}</div>
+              <div style={{ fontSize: "0.8125rem", fontWeight: 700 }}>{date.dayName}</div>
             </button>
           ))}
         </div>
@@ -192,7 +192,7 @@ function BookingPanel({
       {/* Time slots */}
       {selectedDate && (
         <motion.div {...fadeInUp} className="mt-4">
-          <div className="font-medium text-foreground mb-3" style={{ fontSize: "0.875rem" }}>Available Times</div>
+          <div className="font-medium text-foreground mb-3 text-xs">Available Times</div>
           {loadingSlots ? (
             <div className="text-center py-4 text-muted-foreground text-sm">Loading slots...</div>
           ) : (
@@ -203,10 +203,10 @@ function BookingPanel({
                   <button
                     key={slot.start_time}
                     onClick={() => setSelectedTime(formattedTime)}
-                    className={`py-2 px-3 rounded-xl text-sm font-medium border transition-all ${
+                    className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
                       selectedTime === formattedTime
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary hover:bg-brand-50"
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                        : "border-border text-foreground hover:border-primary/40 hover:bg-primary/10"
                     }`}
                   >
                     {formattedTime}
@@ -227,14 +227,14 @@ function BookingPanel({
 
       {/* Price & CTA */}
       <div className="flex items-center justify-between mb-3">
-        <div className="text-muted-foreground" style={{ fontSize: "0.875rem" }}>Total</div>
-        <div className="font-bold text-foreground" style={{ fontFamily: "var(--font-heading)", fontSize: "1.25rem" }}>
+        <div className="text-muted-foreground text-xs">Total</div>
+        <div className="font-extrabold text-foreground text-lg" style={{ fontFamily: "var(--font-heading)" }}>
           ${selectedService ? (selectedService.price_cents / 100).toFixed(0) : "0"}
         </div>
       </div>
 
       <Button
-        className="w-full rounded-xl py-3 glow-brand"
+        className="w-full rounded-xl py-3 glow-brand font-semibold"
         disabled={!selectedDate || !selectedTime}
         onClick={handleBooking}
       >
@@ -429,9 +429,9 @@ export function ExpertStorefrontPage() {
 
       {/* Cover + Identity */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
-        <div className="relative rounded-2xl overflow-hidden">
+        <div className="relative">
           {/* Cover */}
-          <div className={`h-52 sm:h-64 bg-gradient-to-br ${gradient} relative noise-overlay`}>
+          <div className={`h-52 sm:h-64 rounded-t-2xl overflow-hidden bg-gradient-to-br ${gradient} relative noise-overlay`}>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             <div className="absolute top-4 right-4 flex gap-2 z-10">
               <button
@@ -447,10 +447,10 @@ export function ExpertStorefrontPage() {
           </div>
 
           {/* Identity card */}
-          <div className="bg-card border border-border rounded-b-2xl p-5 sm:p-6">
+          <div className="bg-card border border-border border-t-0 rounded-b-2xl p-5 sm:p-6 shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-              {/* Avatar */}
-              <div className={`-mt-16 sm:-mt-20 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-4 border-card flex items-center justify-center shadow-raised shrink-0 overflow-hidden ${!expertUser.avatar_url ? `bg-gradient-to-br ${gradient}` : "bg-muted"}`}>
+              {/* Avatar — elevated z-index, unclipped */}
+              <div className={`-mt-14 sm:-mt-16 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-4 border-card flex items-center justify-center shadow-lg shrink-0 overflow-hidden relative z-20 ${!expertUser.avatar_url ? `bg-gradient-to-br ${gradient}` : "bg-muted"}`}>
                 {expertUser.avatar_url ? (
                   <img src={expertUser.avatar_url} alt={name} className="h-full w-full object-cover" />
                 ) : (
