@@ -70,19 +70,21 @@ function ExpertCard({ service, index }: { service: any; index: number }) {
   return (
     <motion.div
       variants={staggerItem}
-      className="card-hover group relative bg-card rounded-2xl border border-border overflow-hidden shadow-card"
+      whileHover={{ y: -6, scale: 1.01 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="group relative bg-card rounded-2xl border border-border overflow-hidden shadow-card hover:shadow-raised transition-all shimmer-on-hover"
     >
-      {/* Cover gradient */}
-      <div className={`h-28 bg-gradient-to-br ${gradient} relative`}>
+      {/* Cover gradient + noise overlay */}
+      <div className={`h-28 bg-gradient-to-br ${gradient} relative noise-overlay`}>
         <button
           onClick={() => setLiked(l => !l)}
-          className="absolute top-3 right-3 p-1.5 rounded-full bg-black/20 backdrop-blur-sm text-white transition-transform active:scale-90"
+          className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/20 backdrop-blur-sm text-white transition-transform active:scale-90 hover:bg-black/35"
         >
           <Heart className={`h-4 w-4 ${liked ? "fill-rose-400 text-rose-400" : ""}`} />
         </button>
         {expertProfile?.is_on_duty && (
-          <span className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs font-medium text-white bg-black/25 backdrop-blur-sm rounded-full px-2.5 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse-online" />
+          <span className="absolute bottom-3 left-3 z-10 flex items-center gap-1.5 text-xs font-medium text-white bg-black/25 backdrop-blur-sm rounded-full px-2.5 py-1">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-online" />
             Online
           </span>
         )}
@@ -154,7 +156,7 @@ function ExpertCard({ service, index }: { service: any; index: number }) {
               <span className="text-muted-foreground" style={{ fontSize: "0.75rem" }}>/session</span>
             </div>
             <Link to={`/expert/${expertIdentifier}`}>
-              <Button size="sm" className="rounded-full px-4">
+              <Button size="sm" className="rounded-full px-4 font-semibold glow-brand hover:scale-105 transition-transform">
                 Book Now
               </Button>
             </Link>
@@ -740,16 +742,21 @@ export function HomePage() {
 
       {/* Categories */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8">
-        <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
           <button
             onClick={() => setSelectedCategoryId(null)}
-            className={`flex items-center gap-2 shrink-0 px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-              !selectedCategoryId
-                ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
-            }`}
+            className="relative flex items-center gap-2 shrink-0 px-4 py-2 rounded-full border border-border text-sm font-medium transition-colors"
           >
-            All
+            {!selectedCategoryId && (
+              <motion.div
+                layoutId="category-pill"
+                className="absolute inset-0 bg-primary rounded-full"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
+            <span className={`relative z-10 ${!selectedCategoryId ? "text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+              All
+            </span>
           </button>
           {dbCategories.map(cat => {
             const Icon = getCategoryIcon(cat.name)
@@ -758,14 +765,19 @@ export function HomePage() {
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategoryId(active ? null : cat.id)}
-                className={`flex items-center gap-2 shrink-0 px-4 py-2 rounded-full border transition-all text-sm font-medium ${
-                  active
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm"
-                    : "border-border text-muted-foreground hover:border-primary/40 hover:text-primary"
-                }`}
+                className="relative flex items-center gap-2 shrink-0 px-4 py-2 rounded-full border border-border text-sm font-medium transition-colors"
               >
-                <Icon className="h-4 w-4" />
-                {cat.name}
+                {active && (
+                  <motion.div
+                    layoutId="category-pill"
+                    className="absolute inset-0 bg-primary rounded-full"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <Icon className={`relative z-10 h-4 w-4 ${active ? "text-primary-foreground" : "text-muted-foreground"}`} />
+                <span className={`relative z-10 ${active ? "text-primary-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+                  {cat.name}
+                </span>
               </button>
             )
           })}
@@ -775,20 +787,25 @@ export function HomePage() {
       {/* Tab Switcher */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-8">
         <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-1 bg-muted rounded-xl p-1">
+          <div className="flex items-center gap-1 bg-muted rounded-xl p-1 relative">
             {tabs.map(tab => (
               <button
                 key={tab.key}
                 onClick={() => handleTabChange(tab.key)}
-                className={`relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === tab.key
-                    ? "bg-card text-foreground shadow-card"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
+                className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                {tab.label}
-                <span className={`px-1.5 py-0.5 rounded-full text-xs ${
-                  activeTab === tab.key ? "bg-brand-100 text-brand-600" : "bg-muted text-muted-foreground"
+                {activeTab === tab.key && (
+                  <motion.div
+                    layoutId="tab-pill"
+                    className="absolute inset-0 bg-card rounded-lg shadow-card"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className={`relative z-10 ${activeTab === tab.key ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"}`}>
+                  {tab.label}
+                </span>
+                <span className={`relative z-10 px-1.5 py-0.5 rounded-full text-xs transition-colors ${
+                  activeTab === tab.key ? "bg-brand-100 text-brand-600 font-semibold" : "bg-muted text-muted-foreground"
                 }`}>
                   {tab.count}
                 </span>

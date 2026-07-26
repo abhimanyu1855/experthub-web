@@ -30,6 +30,9 @@
 .glow-brand {
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
+.glow-brand-lg {
+  box-shadow: 0 0 40px rgba(99, 102, 241, 0.35), 0 0 80px rgba(99, 102, 241, 0.15);
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -69,9 +72,24 @@
 .typing-dot:nth-child(2) { animation-delay: 0.2s; }
 .typing-dot:nth-child(3) { animation-delay: 0.4s; }
 
-/* Gradient text */
+/* ── Gradient text (animated shift) ── */
 .gradient-text {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient-text-animated {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4, #6366f1);
+  background-size: 300% 300%;
+  animation: gradient-shift 5s ease infinite;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -82,13 +100,38 @@
   background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #312e81 70%, #1e293b 100%);
 }
 
-/* Card hover transition */
+/* ── Card hover — upgraded to spring feel via cubic-bezier ── */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px) scale(1.01);
+  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.18), 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Spotlight card — for bento grid ── */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    280px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(99, 102, 241, 0.13),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+  pointer-events: none;
+}
+.spotlight-card:hover::before {
+  opacity: 1;
 }
 
 /* Smooth focus ring */
@@ -100,3 +143,69 @@
 /* Hide scrollbar while keeping scroll */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Marquee animation ── */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+.animate-marquee {
+  animation: marquee linear infinite;
+  animation-duration: inherit;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse linear infinite;
+  animation-duration: inherit;
+}
+
+/* ── Shimmer sweep (card cover hover effect) ── */
+@keyframes shimmer-sweep {
+  0%   { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+.shimmer-on-hover {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-on-hover::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-12deg);
+  transition: none;
+}
+
+.shimmer-on-hover:hover::after {
+  animation: shimmer-sweep 0.7s ease-out forwards;
+}
+
+/* ── Noise texture overlay (over gradient covers) ── */
+.noise-overlay {
+  position: relative;
+}
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+  pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
+}
