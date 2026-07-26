@@ -6,7 +6,7 @@ import {
   Users, Video, MessageSquare, ChevronRight,
   CheckCircle2, XCircle, AlertCircle, Edit, Settings, BookOpen,
   Plus, Trash2, CalendarDays, PlusCircle, Check, Award, ArrowUpRight,
-  Gift, Copy, Link2
+  Gift, Copy, Link2, Loader2
 } from "lucide-react"
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer

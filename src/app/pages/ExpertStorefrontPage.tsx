@@ -114,30 +114,35 @@ function BookingPanel({
 
       {/* Service selector */}
       <div className="space-y-2 mb-4">
-        {services.map(service => (
-          <button
-            key={service.id}
-            onClick={() => {
-              setSelectedService(service)
-              setSelectedTime(null)
-            }}
-            className={`w-full flex items-start justify-between p-3 rounded-xl border text-left transition-all ${
-              selectedService?.id === service.id
-                ? "border-primary bg-brand-50"
-                : "border-border bg-card hover:border-primary/40"
-            }`}
-          >
-            <div className="flex-1">
-              <div className="font-medium text-foreground" style={{ fontSize: "0.875rem" }}>{service.title}</div>
-              <div className="text-muted-foreground mt-0.5" style={{ fontSize: "0.75rem" }}>
-                {service.duration_minutes} min · {service.description ? service.description.slice(0, 50) + "..." : ""}
+        {services.map(service => {
+          const isSelected = selectedService?.id === service.id
+          return (
+            <button
+              key={service.id}
+              onClick={() => {
+                setSelectedService(service)
+                setSelectedTime(null)
+              }}
+              className={`w-full flex items-start justify-between p-3 rounded-xl border text-left transition-all ${
+                isSelected
+                  ? "border-primary bg-primary/15 shadow-sm"
+                  : "border-border bg-card hover:border-primary/40"
+              }`}
+            >
+              <div className="flex-1">
+                <div className={`font-semibold ${isSelected ? "text-primary" : "text-foreground"}`} style={{ fontSize: "0.875rem" }}>
+                  {service.title}
+                </div>
+                <div className="text-muted-foreground mt-0.5" style={{ fontSize: "0.75rem" }}>
+                  {service.duration_minutes} min · {service.description ? service.description.slice(0, 55) + "..." : ""}
+                </div>
               </div>
-            </div>
-            <div className="font-bold text-primary shrink-0 ml-3" style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem" }}>
-              ${service.price_cents ? (service.price_cents / 100).toFixed(0) : "0"}
-            </div>
-          </button>
-        ))}
+              <div className={`font-bold shrink-0 ml-3 ${isSelected ? "text-primary" : "text-foreground"}`} style={{ fontFamily: "var(--font-heading)", fontSize: "0.9375rem" }}>
+                ${service.price_cents ? (service.price_cents / 100).toFixed(0) : "0"}
+              </div>
+            </button>
+          )
+        })}
         {services.length === 0 && (
           <p className="text-muted-foreground text-sm">No services listed yet.</p>
         )}
@@ -426,16 +431,16 @@ export function ExpertStorefrontPage() {
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
         <div className="relative rounded-2xl overflow-hidden">
           {/* Cover */}
-          <div className={`h-52 sm:h-64 bg-gradient-to-br ${gradient} relative`}>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-            <div className="absolute top-4 right-4 flex gap-2">
+          <div className={`h-52 sm:h-64 bg-gradient-to-br ${gradient} relative noise-overlay`}>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+            <div className="absolute top-4 right-4 flex gap-2 z-10">
               <button
                 onClick={() => setLiked(l => !l)}
-                className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white transition-transform hover:scale-110"
+                className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white transition-transform hover:scale-110 active:scale-95"
               >
                 <Heart className={`h-5 w-5 ${liked ? "fill-rose-400 text-rose-400" : ""}`} />
               </button>
-              <button className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white">
+              <button className="p-2 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/45 transition-colors">
                 <Share2 className="h-5 w-5" />
               </button>
             </div>
@@ -445,10 +450,14 @@ export function ExpertStorefrontPage() {
           <div className="bg-card border border-border rounded-b-2xl p-5 sm:p-6">
             <div className="flex flex-col sm:flex-row sm:items-start gap-4">
               {/* Avatar */}
-              <div className={`-mt-16 sm:-mt-20 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-gradient-to-br ${gradient} border-4 border-card flex items-center justify-center shadow-raised shrink-0`}>
-                <span className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>
-                  {initials}
-                </span>
+              <div className={`-mt-16 sm:-mt-20 h-20 w-20 sm:h-24 sm:w-24 rounded-2xl border-4 border-card flex items-center justify-center shadow-raised shrink-0 overflow-hidden ${!expertUser.avatar_url ? `bg-gradient-to-br ${gradient}` : "bg-muted"}`}>
+                {expertUser.avatar_url ? (
+                  <img src={expertUser.avatar_url} alt={name} className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-2xl font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>
+                    {initials}
+                  </span>
+                )}
               </div>
 
               <div className="flex-1 sm:mt-0">
@@ -459,17 +468,19 @@ export function ExpertStorefrontPage() {
                         {name}
                       </h1>
                       {profile?.approval_status === "approved" && (
-                        <Badge className="bg-brand-50 text-brand-600 border-brand-200 gap-1">
+                        <Badge className="bg-brand-50 text-brand-600 border-brand-200 gap-1 font-medium">
                           <CheckCircle2 className="h-3 w-3" /> Verified
                         </Badge>
                       )}
                       {profile?.is_on_duty && (
-                        <Badge className="bg-success/10 text-success border-success/20 gap-1.5">
+                        <Badge className="bg-success/10 text-success border-success/20 gap-1.5 font-medium">
                           <span className="h-1.5 w-1.5 rounded-full bg-success animate-pulse-online" /> Online
                         </Badge>
                       )}
                     </div>
-                    <p className="text-muted-foreground mt-1">{profile?.title || "Expert Advisor"}</p>
+                    <p className="text-muted-foreground mt-1 font-medium text-sm">
+                      {profile?.specialization || (profile?.title && profile.title !== "Dr." ? profile.title : "Expert Advisor")}
+                    </p>
                   </div>
 
                   {/* Quick stats */}

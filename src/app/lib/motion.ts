@@ -83,7 +83,7 @@ export const revealItem = {
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
   },
 }
 
@@ -91,7 +91,7 @@ export const revealItemFade = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: { duration: 0.5, ease: "easeOut" as const },
   },
 }
 
@@ -109,7 +109,7 @@ export const revealItemLeft = {
   show: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
   },
 }
 
@@ -118,7 +118,7 @@ export const revealItemRight = {
   show: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] as const },
   },
 }
 

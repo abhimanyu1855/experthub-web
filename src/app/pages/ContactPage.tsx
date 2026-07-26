@@ -3,6 +3,7 @@ import { useNavigate } from "react-router"
 import { motion } from "motion/react"
 import { ArrowLeft, Send, Sparkles, CheckCircle2, MessageSquare, Mail, Building, User } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
+import { Badge } from "@/app/components/ui/badge"
 import { toast } from "sonner"
 
 export function ContactPage() {
