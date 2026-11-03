@@ -1,0 +1,31 @@
+{
+  "name": "@experthub/mobile",
+  "version": "3.0.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "prepare:tenant": "tsx scripts/prepare-tenant-assets.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@daily-co/config-plugin-rn-daily-js": "^0.0.9",
+    "@daily-co/react-native-daily-js": "^0.67.0",
+    "@experthub/api-client": "*",
+    "@experthub/ui-tokens": "*",
+    "@react-native-async-storage/async-storage": "1.23.1",
+    "expo": "~52.0.0",
+    "expo-camera": "~16.0.0",
+    "expo-local-authentication": "~15.0.0",
+    "expo-localization": "~16.0.0",
+    "expo-notifications": "~0.29.0",
+    "expo-router": "~4.0.0",
+    "expo-secure-store": "~14.0.0",
+    "expo-updates": "~0.26.0",
+    "nativewind": "^4.1.23",
+    "react": "18.3.1",
+    "react-native": "0.76.1"
+  }
+}

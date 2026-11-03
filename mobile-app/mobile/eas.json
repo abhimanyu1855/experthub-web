@@ -1,0 +1,29 @@
+{
+  "cli": {
+    "version": ">= 12.5.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "production": {
+      "autoIncrement": false,
+      "channel": "production",
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascApiKeyPath": "./.tenant-build/asc-api-key.p8"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./.tenant-build/google-play-service-account.json",
+        "track": "internal"
+      }
+    }
+  }
+}
